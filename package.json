@@ -1,0 +1,43 @@
+{
+  "name": "dal",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "ai": "^1.0.0",
+    "cache": "^1.0.0",
+    "cdn": "^1.0.0",
+    "client": "^1.0.0",
+    "core": "^1.0.0",
+    "dns": "^1.0.0",
+    "enums": "^1.0.0",
+    "file_system": "^1.0.0",
+    "github_automation": "^1.0.0",
+    "godaddy": "^1.0.0",
+    "google": "^1.0.0",
+    "helpers": "^1.0.0",
+    "hosts": "^1.0.0",
+    "interserver_communication": "^1.0.0",
+    "ipc": "^1.0.0",
+    "lifecycle": "^1.0.0",
+    "load_balancing": "^1.0.0",
+    "log": "^1.0.0",
+    "middleware": "^1.0.0",
+    "multimedia": "^1.0.0",
+    "mysocket": "^1.0.0",
+    "pms": "^1.0.0",
+    "precompilation": "^1.0.0",
+    "prerendering": "^1.0.0",
+    "quadtree": "^1.0.0",
+    "shutdown": "^1.0.0",
+    "spritesheet": "^1.0.0",
+    "ssh2": "^1.0.0",
+    "strings": "^1.0.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}

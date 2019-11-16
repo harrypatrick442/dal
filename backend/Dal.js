@@ -71,5 +71,6 @@ module.exports= (function(){
 			});
 		}
 	};
+	_Dal.sql=sql;
 	return _Dal;
 })();

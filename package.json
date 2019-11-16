@@ -1,7 +1,6 @@
 {
   "name": "dal",
   "version": "1.0.0",
-  "description": "",
   "main": "index.js",
   "dependencies": {
     "ai": "^1.0.0",
@@ -39,5 +38,14 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/harrypatrick442/dal.git"
+  },
+  "bugs": {
+    "url": "https://github.com/harrypatrick442/dal/issues"
+  },
+  "homepage": "https://github.com/harrypatrick442/dal#readme",
+  "description": ""
 }

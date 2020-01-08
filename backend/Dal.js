@@ -44,6 +44,15 @@ module.exports= (function(){
 				});
 			});
 		};
+		this.raw = function(definition){
+			return new Promise(function(resolve, reject){
+				var connection = new sql.ConnectionPool(config);
+				connection.connect().then(function(connection) {
+					var request = new sql.Request(connection);
+					request.query(definition).then(result).catch(reject);
+				}).catch(reject);
+			});
+		};
 		this.bulkInsert = function(params){
 			var table = params.table;
 			var callback= params.callback;

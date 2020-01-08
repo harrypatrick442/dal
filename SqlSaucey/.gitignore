@@ -1,0 +1,11 @@
+/bin
+/Console/bin
+/Console/obj
+/WPFCore/bin
+/WPFCore/obj
+/JSON/obj
+/JSON/bin
+/.vs
+bin
+/obj
+/obj/Debug

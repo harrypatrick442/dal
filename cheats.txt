@@ -1,0 +1,9 @@
+CREATE TABLE tblShards(
+id int NOT NULL  IDENTITY(1,1) PRIMARY KEY,
+    hostId int not null,
+    created datetime NOT NULL,
+    name varchar(128) NOT NULL,
+password varchar(128) NOT NULL,
+userIdFromInclusive int NOT NULL,
+userIdToExclusive int NOT NULL
+);

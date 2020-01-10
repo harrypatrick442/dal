@@ -5,4 +5,10 @@ Object.defineProperty(Dal, 'getIntsTable', {
 Object.defineProperty(Dal, 'DalDatabases', {
   get: function(){return require('./backend/DalDatabases')}
 });
+Object.defineProperty(Dal, 'Mssql', {
+  get: function(){return require('./backend/Mssql')}
+});
+Object.defineProperty(Dal, 'Sqlite', {
+  get: function(){return require('./backend/Sqlite')}
+});
 module.exports= Dal;

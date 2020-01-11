@@ -1,19 +1,11 @@
+const sqlite3 = require('sqlite3');
 module.exports = function(params){
+	if(!params)params={};
 	var readOnly = params.readOnly;
-	var disposed = false;
-	this.exec = function(sql){
-		return new Promise((resolve, reject)=>{
-			getDb().then((db)=>{
-				db.exec(sql, function(err) {
-					if(err){
-						reject(err);
-						return;
-					}
-					resolve();
-				});	
-			}).catch(reject);
-		});
-	};
+	var traceCallback = params.traceCallback;
+	var profileCallback = params.profileCallback;
+	var path = params.path;
+	var _db,disposed = false;
 	this.all = function(sql, parameters){
 		return new Promise((resolve, reject)=>{
 			getDb().then((db)=>{
@@ -47,20 +39,33 @@ module.exports = function(params){
 			}
 		});
 	};
+	this.exec = function(sql){
+		return new Promise((resolve, reject)=>{
+			getDb().then((db)=>{
+				db.exec(sql, function(err) {
+					if(err){
+						reject(err);
+						return;
+					}
+					resolve();
+				});	
+			}).catch(reject);
+		});
+	};
 	this.beginGet = function(sql, parameters, callback){
+		return new Promise((resolve, reject)=>{
 			getDb().then((db)=>{
 					var stmt = db.prepare(sql, parameters,(err)=>{
+					if(err){
+						reject(err);
+						return;
+					}
+					stmt.get(function(err, row) {
 						if(err){
 							reject(err);
 							return;
 						}
-						stmt.get(function(err, row) {
-							if(err){
-								reject(err);
-								return;
-							}
-							resolve(new GetHandle(stmt, callback);
-						});
+						resolve(new GetHandle(stmt, callback));
 					});
 				}, done);	
 			}).catch(reject);
@@ -68,7 +73,7 @@ module.exports = function(params){
 	};
 	this.run = function(sql, parameters){
 		return new Promise((resolve, reject)=>{
-			getDb.then((db)=>{
+			getDb().then((db)=>{
 				db.run(sql, parameters);
 			}).catch(reject);
 		});
@@ -76,9 +81,22 @@ module.exports = function(params){
 	function getDb(){
 		return new Promise((resolve, reject)=>{
 			checkNotDisposed();
-			var db = new sqlite3.Database(PATH, sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE, (err)=>{
+			if(_db){
+				resolve(_db);
+				return;
+			}
+			console.log(path);
+			if(traceCallback||profileCallback){
+				console.log('verbose');
+				sqlite3.verbose();
+			}
+			_db = new sqlite3.Database(path, sqlite3.OPEN_READWRITE, (err)=>{
 				if(err){reject(err);return;}
-				resolve(db);
+				if(traceCallback)
+					_db.on('trace', traceCallback);
+				if(profileCallback)
+					_db.on('profile', profileCallback);
+				resolve(_db);
 			});
 		});
 	}

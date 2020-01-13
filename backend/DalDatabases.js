@@ -5,7 +5,7 @@ module.exports= function(configuration){
 			var dal = new Dal(currentDatabaseConfiguration);
 			dal.raw(statement).then(()=>{
 				resolve(new DatabaseConfiguration({user:currentDatabaseConfiguration.getUser(), password:currentDatabaseConfiguration.getPassword(),
-				server:currentDatabaseConfiguration.getServer(), database:name});
+				server:currentDatabaseConfiguration.getServer(), database:name}));
 			}).catch(reject);
 		});
 	};

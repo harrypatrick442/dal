@@ -1,7 +1,12 @@
 module.exports= function(configuration){
-	this.createDatabase = function(currentDatabaseConfiguration){
-		var statement = 'CREATE DATABASE '+name+';';
-		var dal = new Dal(currentDatabaseConfiguration);
-		return dal.raw(statement);
+	this.createDatabase = function(currentDatabaseConfiguration, name){
+		return new Promise((resolve, reject)=>{
+			var statement = 'CREATE DATABASE '+name+';';
+			var dal = new Dal(currentDatabaseConfiguration);
+			dal.raw(statement).then(()=>{
+				resolve(new DatabaseConfiguration({user:currentDatabaseConfiguration.getUser(), password:currentDatabaseConfiguration.getPassword(),
+				server:currentDatabaseConfiguration.getServer(), database:name});
+			}).catch(reject);
+		});
 	};
 };

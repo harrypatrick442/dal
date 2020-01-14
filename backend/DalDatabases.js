@@ -1,5 +1,6 @@
 module.exports= new(function(configuration){
 	const Dal =require('./Dal');
+	const DatabaseConiguration = require('configuration').DatabaseConfiguration;
 	this.createDatabase = function(currentDatabaseConfiguration, name){
 		return new Promise((resolve, reject)=>{
 			var statement = "If(db_id(N'"+name+"') IS NULL)CREATE DATABASE "+name+';';

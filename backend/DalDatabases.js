@@ -1,4 +1,4 @@
-module.exports= function(configuration){
+module.exports= new(function(configuration){
 	this.createDatabase = function(currentDatabaseConfiguration, name){
 		return new Promise((resolve, reject)=>{
 			var statement = 'CREATE DATABASE '+name+';';
@@ -9,4 +9,4 @@ module.exports= function(configuration){
 			}).catch(reject);
 		});
 	};
-};
+})();

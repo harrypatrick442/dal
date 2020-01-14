@@ -1,6 +1,6 @@
 const Strings = require('strings');
 const StringHelper = Strings.StringsHelper;
-const regExpGetCreateOrAlterDeinition= new RegExp('');
+const fs = require('fs');
 function Programmable(params){
 	var definition = params.definition;
 	if(!params.name)params.name = getNameFromDefinition(definition);

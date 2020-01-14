@@ -30,6 +30,7 @@ const Table = function(params){
 			});
 			str+=')';
 		}
+		
 		str +=')';
 		return str;
 	};
@@ -47,3 +48,5 @@ const Table = function(params){
 		return '('+length+')';
 	}
 };
+
+module.exports = Table;

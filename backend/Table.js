@@ -17,8 +17,8 @@ const Table = function(params){
 		var first = true;
 		var primaryKeyColumns=[];
 		columns.forEach((column)=>{
-			if(first)str+=',';
-			else first = false;
+			if(first)first = false;
+			else str+=',';
 			str+='['+column.getName()+'] '+column.getType()+getPrecisionScaleLength(column);
 			str+=column.getNullable()?' NULL':' NOT NULL';
 			if(column.getPrimaryKey())
@@ -45,7 +45,7 @@ const Table = function(params){
 			return '('+preicsion+','+scale+')';
 		}
 		var length = column.getLength();
-		if(length===undefined||length===null)return null;
+		if(length===undefined||length===null)return '';
 		return '('+length+')';
 	}
 };

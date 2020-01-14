@@ -82,6 +82,7 @@ module.exports = new (function(params){
 				}
 				var programmablePath = iteratorProgrammablePaths.next();
 				Programmable.fromFile(programmablePath).then((programmable)=>{
+					console.log('n2');
 					programmables.push(programmable);
 					next();
 				}).catch(reject);

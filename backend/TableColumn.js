@@ -24,4 +24,7 @@ module.exports = function(params){
 	this.getNullable = function(){
 		return params.null?true:false;
 	};
+	this.getAutoIncrement = function(){
+		return params.autoIncrement?true:false;
+	};
 };

@@ -12,7 +12,7 @@ module.exports= new(function(configuration){
 		});
 	};
 	
-	this.createDatabase = function(currentDatabaseConfiguration, name){
+	this.deleteDatabase = function(currentDatabaseConfiguration, name){
 		return new Promise((resolve, reject)=>{
 			var dal = new Dal(currentDatabaseConfiguration);
 			var statement = "If(db_id(N'"+name+"') IS NOT NULL)DROP DATABASE "+name+';';

@@ -3,6 +3,8 @@ const StringsHelper = Core.StringsHelper;
 const fs = require('fs');
 function Programmable(params){
 	var definition = params.definition;
+	if(!definition)throw new Error('Definition is empty');
+	console.log(definition);
 	if(!params.name)params.name = getNameFromDefinition(definition);
 	this.getProgrammableType = function(){
 		throwNotImplemented();

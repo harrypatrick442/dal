@@ -17,6 +17,6 @@ module.exports= new(function(configuration){
 			var dal = new Dal(currentDatabaseConfiguration);
 			var statement = "If(db_id(N'"+name+"') IS NOT NULL)DROP DATABASE "+name+';';
 			dal.raw(statement).then(resolve).catch(reject);
-		}).catch(reject);
+		});
 	};
 })();

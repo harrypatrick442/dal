@@ -1,37 +1,52 @@
-module.exports = (function(params){
-	const logPath =params.logPath, databaseName=params.databaseName, 
-	const log = new Log({path:logPath});
-	this.build = function(){
-		var newDatabase;
-		createDatabase(host, databaseName).then((database)=>{
-			newDatabase = database;
-			populateDatabaseWithProgrammables().then(()=>{
-				
-			}).catch(error);	
-		}).catch(error);
-		
-		function error(err){
-			if(newDatabase){
-				DalDatabases.deleteDatabase(newDatabase).then(doReject).catch((err)=>{
-					log.error(new Error('Error deleting database '+newDatabase.getName()+' while cleaning up after creating new shard faile'));
-					doReject();
-				});
-				return;
+module.exports = new (function(params){
+	const path = require('path');
+	const DalDatabases = require('./DalDatabases');
+	const Programmable = require('./Programmable');
+	const Core = require('core');
+	const DalLog = require('./DalLog');
+	const Iterator = Core.Iterator;
+	this.build = function(params){
+		const programmablePaths = params.programmablePaths;
+		if(!programmablePaths)throw new Error('No programmablePaths provided');
+		const shardHost = params.shardHost;
+		if(!shardHost)throw new Error('No host provided');
+		const name = params.name;
+		if(!name)throw new Error('No name provided');
+		const createShard = params.createShard;
+		if(!createShard)throw new Error('No createShard provided');
+		return new Promise((resolve, reject)=>{
+			var newDatabaseConfiguration;
+			createDatabase(shardHost.getDatabaseConfiguration(), name).then((newDatabaseConfigurationIn)=>{
+				newDatabaseConfiguration = newDatabaseConfigurationIn;
+				populateDatabaseWithProgrammables().then(()=>{
+					createShard(newDatabaseConfigurationIn, shardHost).then((shard)=>{
+						shard.update().then(()=>{
+							resolve(shard);
+						}).catch(error);
+					}).catch(reject);
+				}).catch(error);	
+			}).catch(error);
+			
+			function error(err){
+				if(newDatabaseConfiguration){
+					DalDatabases.deleteDatabase(newDatabaseConfiguration).then(doReject).catch((err)=>{
+						DalLog.error(new Error('Error deleting database '+newDatabaseConfiguration.getDatabase()+' while cleaning up after creating new shard faile'));
+						doReject();
+					});
+					return;
+				}
+				doReject();
+				function doReject(){
+					reject(err);
+				}
 			}
-			doReject();
-			function doReject(){
-				log.error(err);
-				reject(err);
-			}}
-		}
+		});
 	};
-	
-	
-	function createDatabase(host, name){
-		return DalDatabases.createDatabase();
+	function createDatabase(currentDatabaseConfiguration, name){
+		return DalDatabases.createDatabase(currentDatabaseConfiguration, name);
 	}
 	function populateDatabaseWithProgrammables(){
-		return new Promimse((resolve, reject)=>{
+		return new Promise((resolve, reject)=>{
 			getProgrammables().then((programmables)=>{
 				var iterator = new Iterator(programmables);
 				nextProgrammable();
@@ -47,8 +62,24 @@ module.exports = (function(params){
 		});
 	}
 	function populateDatabaseWithProgrammable(){
+		return DalProgrammability.executeDefinition(programmable.getCreateDefinition());
+	}
+	function getProgrammables(){
 		return new Promise((resolve, reject)=>{
-			DalProgrammability.executeDefinition(programmable.getCreateDefinition()).then(resolve).catch(reject);
-		);
+			var programmables =[];
+			var iteratorProgrammablePaths = new Iterator(programmablePaths);
+			next();
+			function next(){
+				if(!iteratorProgrammablePaths.hasNext()){
+					resolve(programmables);
+					return;
+				}
+				var programmablePath = iteratorProgrammablePaths.next();
+				Programmable.fromFile(programmablePath).then((programmable)=>{
+					programmables.push(programmable);
+					next();
+				}).catch(reject);
+			}
+		});
 	}
 })();

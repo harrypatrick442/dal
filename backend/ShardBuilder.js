@@ -25,6 +25,8 @@ module.exports = (function(params){
 			}}
 		}
 	};
+	
+	
 	function createDatabase(host, name){
 		return DalDatabases.createDatabase();
 	}

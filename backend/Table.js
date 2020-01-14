@@ -21,9 +21,9 @@ const Table = function(params){
 			else first = false;
 			str+='['+column.getName()+'] '+column.getType()+getPrecisionScaleLength(column);
 			str+=column.getNullable()?' NULL':' NOT NULL';
+			if(column.getPrimaryKey())
+				primaryKeyColumns.push(column);
 		});
-		if(column.getPrimaryKey())
-			primaryKeyColumns.push(column);
 		if(primaryKeyColumns.length>0){
 			str+=', PRIMARY KEY(';
 			primaryKeyColumns.forEach((primaryKeyColumn)=>{

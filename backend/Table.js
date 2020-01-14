@@ -8,7 +8,7 @@ const Table = function(params){
 	this.getCreate = getCreate;
 	this.getUpdate = getUpdate;
 	function getUpdate(){
-		var str = "IF(object_id('"+name+"') is not null) begin drop table "+name+";";
+		var str = "IF(object_id('"+name+"') is not null) begin drop table "+name+" end;";
 		str+=getCreate();
 		return str;
 	}

@@ -21,7 +21,7 @@ module.exports = new (function(params){
 			if(!tables)throw new Error('No tables provided');
 			var newDatabaseConfiguration;
 			createDatabase(shardHost.getDatabaseConfiguration(), name).then((newDatabaseConfigurationIn)=>{
-				createTables(tables).then(()=>{
+				createTables(newDatabaseConfigurationIn, tables).then(()=>{
 					newDatabaseConfiguration = newDatabaseConfigurationIn;
 					populateDatabaseWithProgrammables(programmablePaths, new DalProgrammability(newDatabaseConfigurationIn)).then(()=>{
 						createShard(newDatabaseConfigurationIn, shardHost).then((shard)=>{
@@ -51,7 +51,7 @@ module.exports = new (function(params){
 	function createDatabase(currentDatabaseConfiguration, name){
 		return DalDatabases.createDatabase(currentDatabaseConfiguration, name);
 	}
-	function createTables(tables){
+	function createTables(databaseConfiguration, tables){
 		return new Promise((resolve, reject)=>{
 			var iterator = new Iterator(tables);
 			next();
@@ -61,7 +61,7 @@ module.exports = new (function(params){
 					return;
 				}
 				var table = iterator.next();
-				DalTables.createTable(table).then(next).catch(reject);
+				DalTables.createTable(databaseConfiguration, table).then(next).catch(reject);
 			}
 		});
 	}

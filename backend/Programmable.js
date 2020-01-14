@@ -1,5 +1,5 @@
-const Strings = require('strings');
-const StringsHelper = Strings.StringsHelper;
+const Core = require('core');
+const StringsHelper = Core.StringsHelper;
 const fs = require('fs');
 function Programmable(params){
 	var definition = params.definition;

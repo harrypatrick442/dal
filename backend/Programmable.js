@@ -1,5 +1,5 @@
 const Strings = require('strings');
-const StringHelper = Strings.StringsHelper;
+const StringsHelper = Strings.StringsHelper;
 const fs = require('fs');
 function Programmable(params){
 	var definition = params.definition;
@@ -52,7 +52,7 @@ function parseDefinition(str, toDo){
 	return StringsHelper.replaceAll(str, "Alter\\s+Procedure", toDo+" Procedure");
 }
 function getNameFromDefinition(definition){
-	return ''
+	return '';
 }
 function throwNotImplemented(){
 	throw new Error('Not implemented');

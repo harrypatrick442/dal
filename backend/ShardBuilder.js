@@ -5,6 +5,7 @@ module.exports = new (function(params){
 	const Core = require('core');
 	const DalLog = require('./DalLog');
 	const Iterator = Core.Iterator;
+	const DalProgrammables =require('./DalProgrammables');
 	this.build = function(params){
 		const programmablePaths = params.programmablePaths;
 		if(!programmablePaths)throw new Error('No programmablePaths provided');
@@ -18,7 +19,7 @@ module.exports = new (function(params){
 			var newDatabaseConfiguration;
 			createDatabase(shardHost.getDatabaseConfiguration(), name).then((newDatabaseConfigurationIn)=>{
 				newDatabaseConfiguration = newDatabaseConfigurationIn;
-				populateDatabaseWithProgrammables().then(()=>{
+				populateDatabaseWithProgrammables(programmablePaths, new DalProgrammables(newDatabaseConfigurationIn)).then(()=>{
 					createShard(newDatabaseConfigurationIn, shardHost).then((shard)=>{
 						shard.update().then(()=>{
 							resolve(shard);
@@ -45,9 +46,9 @@ module.exports = new (function(params){
 	function createDatabase(currentDatabaseConfiguration, name){
 		return DalDatabases.createDatabase(currentDatabaseConfiguration, name);
 	}
-	function populateDatabaseWithProgrammables(){
+	function populateDatabaseWithProgrammables(programmablePaths, dalProgrammables){
 		return new Promise((resolve, reject)=>{
-			getProgrammables().then((programmables)=>{
+			getProgrammables(programmablePaths).then((programmables)=>{
 				var iterator = new Iterator(programmables);
 				nextProgrammable();
 				function nextProgrammable(){
@@ -56,7 +57,9 @@ module.exports = new (function(params){
 						return;
 					}
 					var programmable = iterator.next();
-					populateDatabaseWithProgrammables(programmable).then(nextProgrammable).catch(reject);
+					dalProgrammables.updateProgrammable(programmable).then(()=>{
+						populateDatabaseWithProgrammable(programmablePaths, dalProgrammables).then(nextProgrammable).catch(reject);
+					}).catch(reject);
 				}
 			}).catch(reject);
 		});
@@ -64,7 +67,7 @@ module.exports = new (function(params){
 	function populateDatabaseWithProgrammable(){
 		return DalProgrammability.executeDefinition(programmable.getCreateDefinition());
 	}
-	function getProgrammables(){
+	function getProgrammables(programmablePaths){
 		return new Promise((resolve, reject)=>{
 			var programmables =[];
 			var iteratorProgrammablePaths = new Iterator(programmablePaths);

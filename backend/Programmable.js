@@ -1,7 +1,8 @@
 const Strings = require('strings');
 const StringHelper = Strings.StringsHelper;
+const regExpGetCreateOrAlterDeinition= new RegExp('');
 function Programmable(params){
-	var definition = initializeDefinition(params.definition);
+	var definition = params.definition;
 	if(!params.name)params.name = getNameFromDefinition(definition);
 	this.getProgrammableType = function(){
 		throwNotImplemented();
@@ -13,10 +14,13 @@ function Programmable(params){
 		return definition;
 	};
 	this.getCreateDefinition = function(){
-		throwNotImplemented();
+		return parseDefinition(definition, 'Create');
 	};
 	this.getAlterDefinition = function(){
-		throwNotImplemented();
+		return parseDefinition(definition, 'Alter');
+	};
+	this.getCreateOrAlterDefinition=function(){
+		return parseDefinition(definition, 'Create Or Alter');
 	};
 };
 module.exports = Programmable;
@@ -38,11 +42,14 @@ Programmable.fromFile=function(path){
 		});
 	});
 };
-function initializeDefinition(str){
-	str = StringsHelper.replaceAll("OLD\\s+Value", str, "New Value");
-	str = StringsHelper.replaceAll("Create\\s+View", str, "Alter View");
-	str = StringsHelper.replaceAll("Create\\s+Function", str, "Alter Function");
-	return StringsHelper.replaceAll("Create\\s+Procedure", str, "Alter Procedure");
+function parseDefinition(str, toDo){
+	str = StringsHelper.replaceAll(str, "OLD\\s+Value", "New Value");
+	str = StringsHelper.replaceAll(str, "Create\\s+View", toDo+" View");
+	str = StringsHelper.replaceAll(str, "Create\\s+Function", toDo+" Function");
+	str =  StringsHelper.replaceAll(str, "Create\\s+Procedure", toDo+" Procedure");
+	str = StringsHelper.replaceAll(str, "Alter\\s+View", toDo+" View");
+	str = StringsHelper.replaceAll(str, "Alter\\s+Function", toDo+" Function");
+	return StringsHelper.replaceAll(str, "Alter\\s+Procedure", toDo+" Procedure");
 }
 function getNameFromDefinition(definition){
 	return ''

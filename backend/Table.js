@@ -22,7 +22,7 @@ const Table = function(params){
 			str+='['+column.getName()+'] '+column.getType()+getPrecisionScaleLength(column);
 			str+=column.getNullable()?' NULL':' NOT NULL';
 			if(column.getAutoIncrement())
-				str+=' AUTO_INCREMENT';
+				str+=' AUTO_INCREMENT ';
 			if(column.getPrimaryKey())
 				primaryKeyColumns.push(column);
 		});

@@ -48,7 +48,7 @@ var Mssql = function(configuration){
 			var connection = new sql.ConnectionPool(config);
 			connection.connect().then(function(connection) {
 				var request = new sql.Request(connection);
-				request.query(definition).then(result).catch(reject);
+				request.query(definition).then(resolve).catch(reject);
 			}).catch(reject);
 		});
 	};

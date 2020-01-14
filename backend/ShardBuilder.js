@@ -39,7 +39,7 @@ module.exports = (function(params){
 						return;
 					}
 					var programmable = iterator.next();
-					populateDatabaseWithProgrammable(programmable).then(nextProgrammable).catch(reject);
+					populateDatabaseWithProgrammables(programmable).then(nextProgrammable).catch(reject);
 				}
 			}).catch(reject);
 		});

@@ -62,16 +62,10 @@ module.exports = new (function(params){
 						return;
 					}
 					var programmable = iterator.next();
-					dalProgrammability.updateProgrammable(programmable).then(()=>{
-				console.log('updateProgrammable');
-						populateDatabaseWithProgrammable(programmablePaths, dalProgrammability).then(nextProgrammable).catch(reject);
-					}).catch(reject);
+					dalProgrammability.updateProgrammable(programmable).then(nextProgrammable).catch(reject);
 				}
 			}).catch(reject);
 		});
-	}
-	function populateDatabaseWithProgrammable(){
-		return DalProgrammability.executeDefinition(programmable.getCreateDefinition());
 	}
 	function getProgrammables(programmablePaths){
 		return new Promise((resolve, reject)=>{

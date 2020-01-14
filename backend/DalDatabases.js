@@ -1,5 +1,5 @@
 module.exports= new(function(configuration){
-	const Dal =require('dal');
+	const Dal =require('./Dal');
 	this.createDatabase = function(currentDatabaseConfiguration, name){
 		return new Promise((resolve, reject)=>{
 			var statement = 'CREATE DATABASE '+name+';';

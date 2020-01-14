@@ -18,13 +18,16 @@ module.exports = new (function(params){
 		return new Promise((resolve, reject)=>{
 			var newDatabaseConfiguration;
 			createDatabase(shardHost.getDatabaseConfiguration(), name).then((newDatabaseConfigurationIn)=>{
+				console.log('createDatabase');
 				newDatabaseConfiguration = newDatabaseConfigurationIn;
 				populateDatabaseWithProgrammables(programmablePaths, new DalProgrammability(newDatabaseConfigurationIn)).then(()=>{
+				console.log('populateDatabaseWithProgrammables');
 					createShard(newDatabaseConfigurationIn, shardHost).then((shard)=>{
+				console.log('createShard');
 						shard.update().then(()=>{
 							resolve(shard);
 						}).catch(error);
-					}).catch(reject);
+					}).catch(error);
 				}).catch(error);	
 			}).catch(error);
 			

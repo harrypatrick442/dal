@@ -1,7 +1,7 @@
-module.exports= new (function(configuration){
+module.exports= new (function(){
 	const Dal =require('./Dal');
-	const dal = new Dal(configuration);
-	this.createTable = function(table){
+	this.createTable = function(databaseConfiguration, table){
+		var dal = new Dal(databaseConfiguration);
 		return dal.raw(table.getCreate());
 	};
 })();

@@ -31,7 +31,7 @@ Programmable.fromSqlReader = function(){
 };
 Programmable.fromFile=function(path){
 	return new Promise((resolve, reject)=>{
-		fs.readFile(path, (err, sql)=>{
+		fs.readFile(path, "utf8", (err, sql)=>{
 			if(err){
 				reject(err);
 				return;

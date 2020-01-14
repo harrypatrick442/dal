@@ -74,7 +74,9 @@ module.exports = new (function(params){
 			var iteratorProgrammablePaths = new Iterator(programmablePaths);
 			next();
 			function next(){
+					console.log('n');
 				if(!iteratorProgrammablePaths.hasNext()){
+					console.log('next');
 					resolve(programmables);
 					return;
 				}

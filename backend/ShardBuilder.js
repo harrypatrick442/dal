@@ -53,14 +53,17 @@ module.exports = new (function(params){
 		return new Promise((resolve, reject)=>{
 			getProgrammables(programmablePaths).then((programmables)=>{
 				var iterator = new Iterator(programmables);
+				console.log('iterator');
 				nextProgrammable();
 				function nextProgrammable(){
+				console.log('nextProgrammable');
 					if(!iterator.hasNext()){
 						resolve();
 						return;
 					}
 					var programmable = iterator.next();
 					dalProgrammability.updateProgrammable(programmable).then(()=>{
+				console.log('updateProgrammable');
 						populateDatabaseWithProgrammable(programmablePaths, dalProgrammability).then(nextProgrammable).catch(reject);
 					}).catch(reject);
 				}

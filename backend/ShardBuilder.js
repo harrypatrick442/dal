@@ -51,6 +51,7 @@ module.exports = new (function(params){
 	}
 	function populateDatabaseWithProgrammables(programmablePaths, dalProgrammability){
 		return new Promise((resolve, reject)=>{
+				console.log('getProgrammables');
 			getProgrammables(programmablePaths).then((programmables)=>{
 				var iterator = new Iterator(programmables);
 				console.log('iterator');

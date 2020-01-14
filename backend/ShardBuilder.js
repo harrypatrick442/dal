@@ -5,7 +5,7 @@ module.exports = (function(params){
 		var newDatabase;
 		createDatabase(host, databaseName).then((database)=>{
 			newDatabase = database;
-			populateDatabaseWithProgrammabes().then(()=>{
+			populateDatabaseWithProgrammables().then(()=>{
 				
 			}).catch(error);	
 		}).catch(error);

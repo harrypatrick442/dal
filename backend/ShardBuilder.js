@@ -6,6 +6,7 @@ module.exports = new (function(params){
 	const DalLog = require('./DalLog');
 	const Iterator = Core.Iterator;
 	const DalProgrammability =require('./DalProgrammability');
+	const DalTables =require('./DalTables');
 	this.build = function(params){
 		return new Promise((resolve, reject)=>{
 			const programmablePaths = params.programmablePaths;

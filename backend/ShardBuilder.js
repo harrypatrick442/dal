@@ -5,7 +5,7 @@ module.exports = new (function(params){
 	const Core = require('core');
 	const DalLog = require('./DalLog');
 	const Iterator = Core.Iterator;
-	const DalProgrammables =require('./DalProgrammables');
+	const DalProgrammability =require('./DalProgrammability');
 	this.build = function(params){
 		const programmablePaths = params.programmablePaths;
 		if(!programmablePaths)throw new Error('No programmablePaths provided');
@@ -19,7 +19,7 @@ module.exports = new (function(params){
 			var newDatabaseConfiguration;
 			createDatabase(shardHost.getDatabaseConfiguration(), name).then((newDatabaseConfigurationIn)=>{
 				newDatabaseConfiguration = newDatabaseConfigurationIn;
-				populateDatabaseWithProgrammables(programmablePaths, new DalProgrammables(newDatabaseConfigurationIn)).then(()=>{
+				populateDatabaseWithProgrammables(programmablePaths, new DalProgrammability(newDatabaseConfigurationIn)).then(()=>{
 					createShard(newDatabaseConfigurationIn, shardHost).then((shard)=>{
 						shard.update().then(()=>{
 							resolve(shard);
@@ -46,7 +46,7 @@ module.exports = new (function(params){
 	function createDatabase(currentDatabaseConfiguration, name){
 		return DalDatabases.createDatabase(currentDatabaseConfiguration, name);
 	}
-	function populateDatabaseWithProgrammables(programmablePaths, dalProgrammables){
+	function populateDatabaseWithProgrammables(programmablePaths, dalProgrammability){
 		return new Promise((resolve, reject)=>{
 			getProgrammables(programmablePaths).then((programmables)=>{
 				var iterator = new Iterator(programmables);
@@ -57,8 +57,8 @@ module.exports = new (function(params){
 						return;
 					}
 					var programmable = iterator.next();
-					dalProgrammables.updateProgrammable(programmable).then(()=>{
-						populateDatabaseWithProgrammable(programmablePaths, dalProgrammables).then(nextProgrammable).catch(reject);
+					dalProgrammability.updateProgrammable(programmable).then(()=>{
+						populateDatabaseWithProgrammable(programmablePaths, dalProgrammability).then(nextProgrammable).catch(reject);
 					}).catch(reject);
 				}
 			}).catch(reject);

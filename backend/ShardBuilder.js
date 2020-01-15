@@ -7,6 +7,7 @@ module.exports = new (function(params){
 	const Iterator = Core.Iterator;
 	const DalProgrammability =require('./DalProgrammability');
 	const DalTables =require('./DalTables');
+	const DalTypes = require('./DalTypes');
 	this.build = function(params){
 		return new Promise((resolve, reject)=>{
 			const programmablePaths = params.programmablePaths;
@@ -19,16 +20,20 @@ module.exports = new (function(params){
 			if(!createShard)throw new Error('No createShard provided');
 			const tables = params.tables;
 			if(!tables)throw new Error('No tables provided');
+			const tableTypes = params.tableTypes;
+			if(!tableTypes)throw new Error('No tableTypes provided');
 			var newDatabaseConfiguration;
 			createDatabase(shardHost.getDatabaseConfiguration(), name).then((newDatabaseConfigurationIn)=>{
-				createTables(newDatabaseConfigurationIn, tables).then(()=>{
-					newDatabaseConfiguration = newDatabaseConfigurationIn;
-					populateDatabaseWithProgrammables(programmablePaths, new DalProgrammability(newDatabaseConfigurationIn)).then(()=>{
-						createShard(newDatabaseConfigurationIn, shardHost).then((shard)=>{
-							shard.update().then(()=>{
-								resolve(shard);
+				createTables(newDatabaseConfigurationIn, tables).then(()=>{	
+					createTableTypes(newDatabaseConfigurationIn, tableTypes).then(()=>{
+						newDatabaseConfiguration = newDatabaseConfigurationIn;
+						populateDatabaseWithProgrammables(programmablePaths, new DalProgrammability(newDatabaseConfigurationIn)).then(()=>{
+							createShard(newDatabaseConfigurationIn, shardHost).then((shard)=>{
+								shard.update().then(()=>{
+									resolve(shard);
+								}).catch(error);
 							}).catch(error);
-						}).catch(error);
+						}).catch(error);	
 					}).catch(error);	
 				}).catch(error);	
 			}).catch(error);
@@ -49,9 +54,15 @@ module.exports = new (function(params){
 		});
 	};
 	function createDatabase(currentDatabaseConfiguration, name){
-		return DalDatabases.createDatabase(currentDatabaseConfiguration, name);
+		return DalDatabases.createOrRecreateDatabase(currentDatabaseConfiguration, name);
 	}
 	function createTables(databaseConfiguration, tables){
+		return createTX(DalTables.createTable, databaseConfiguration, tables)
+	}
+	function createTableTypes(databaseConfiguration, tableTypes){
+		return createTX(DalTypes.createTableTypes, databaseConfiguration, tableTypes)
+	}
+	function createTX(func, databaseConfiguration, tables){
 		return new Promise((resolve, reject)=>{
 			var iterator = new Iterator(tables);
 			next();
@@ -61,7 +72,7 @@ module.exports = new (function(params){
 					return;
 				}
 				var table = iterator.next();
-				DalTables.createTable(databaseConfiguration, table).then(next).catch(reject);
+				func(databaseConfiguration, table).then(next).catch(reject);
 			}
 		});
 	}

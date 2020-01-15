@@ -6,6 +6,7 @@ const Table = function(params){
 	var columns = params.columns;
 	if(!columns)throw new Error('No columns provided');
 	this.getCreate = getCreate;
+	this.getCreateTableType = getCreateTableType;
 	this.getUpdate = getUpdate;
 	function getUpdate(){
 		var str = "IF(object_id('"+name+"') is not null) begin drop table "+name+" end;";
@@ -13,7 +14,15 @@ const Table = function(params){
 		return str;
 	}
 	function getCreate(){
-		var str = 'CREATE TABLE '+name+'(';
+		var str = 'CREATE TABLE '+name;
+		return _getCreate(str);
+	}
+	function getCreateTableType(){
+		var str = 'CREATE TYPE [dbo].['+name+'] AS TABLE';
+		return _getCreate(str);
+	}
+	function _getCreate(str){
+		str+='(';
 		var first = true;
 		var primaryKeyColumns=[];
 		columns.forEach((column)=>{

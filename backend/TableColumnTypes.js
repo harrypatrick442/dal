@@ -3,5 +3,6 @@ module.exports = {
 	DECIMAL:'decimal',
 	VARCHAR:'varchar',
 	BIT:'bit',
-	DATETIME:'datetime'
+	DATETIME:'datetime',
+	TEXT:'text'
 };

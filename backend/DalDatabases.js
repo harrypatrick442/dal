@@ -3,11 +3,11 @@ module.exports= new(function(configuration){
 	const DatabaseConfiguration = require('configuration').DatabaseConfiguration;
 	this.createDatabase = function(currentDatabaseConfiguration, name){
 			var statement = "CREATE DATABASE "+name+';';
-			return _createDatabase(statement);
+			return _createDatabase(currentDatabaseConfiguration, name, statement);
 	};
 	this.createOrRecreateDatabase = function(currentDatabaseConfiguration, name){
 			var statement = "If(db_id(N'"+name+"') IS NOT NULL)DROP DATABASE "+name+"; CREATE DATABASE "+name+';';
-			return _createDatabase(statement);
+			return _createDatabase(currentDatabaseConfiguration, name, statement);
 	};
 	
 	this.deleteDatabase = function(currentDatabaseConfiguration, name){
@@ -17,7 +17,7 @@ module.exports= new(function(configuration){
 			dal.raw(statement).then(resolve).catch(reject);
 		});
 	};
-	function _createDatabase(statement){
+	function _createDatabase(currentDatabaseConfiguration, name, statement){
 		return new Promise((resolve, reject)=>{
 			var dal = new Dal(currentDatabaseConfiguration);
 			dal.raw(statement).then(()=>{

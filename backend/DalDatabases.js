@@ -20,7 +20,10 @@ module.exports= new(function(configuration){
 	function _createDatabase(currentDatabaseConfiguration, name, statement){
 		return new Promise((resolve, reject)=>{
 			var dal = new Dal(currentDatabaseConfiguration);
+			console.log('about to do raw');
+			console.log(statement);
 			dal.raw(statement).then(()=>{
+				console.log('did raw');
 				resolve(new DatabaseConfiguration({user:currentDatabaseConfiguration.getUser(), password:currentDatabaseConfiguration.getPassword(),
 				server:currentDatabaseConfiguration.getServer(), database:name}));
 			}).catch(reject);

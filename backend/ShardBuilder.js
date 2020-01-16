@@ -23,10 +23,18 @@ module.exports = new (function(params){
 			const tableTypes = params.tableTypes;
 			if(!tableTypes)throw new Error('No tableTypes provided');
 			var newDatabaseConfiguration;
+			console.log('a');
+			console.log(shardHost.getDatabaseConfiguration().toJSON());
 			createDatabase(shardHost.getDatabaseConfiguration(), name).then((newDatabaseConfigurationIn)=>{
-				createTables(newDatabaseConfigurationIn, tables).then(()=>{	
+				
+			console.log('b');
+			createTables(newDatabaseConfigurationIn, tables).then(()=>{	
+			console.log('c');
 					createTableTypes(newDatabaseConfigurationIn, tableTypes).then(()=>{
+			console.log('d');
 						newDatabaseConfiguration = newDatabaseConfigurationIn;
+						
+			console.log('d');
 						populateDatabaseWithProgrammables(programmablePaths, new DalProgrammability(newDatabaseConfigurationIn)).then(()=>{
 							createShard(newDatabaseConfigurationIn, shardHost).then((shard)=>{
 								shard.update().then(()=>{

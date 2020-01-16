@@ -22,7 +22,7 @@ module.exports = function(params){
 		return params.primaryKey?true:false;
 	};
 	this.getNullable = function(){
-		return params.null?true:false;
+		return params.nullable?true:false;
 	};
 	this.getAutoIncrement = function(){
 		return params.autoIncrement?true:false;

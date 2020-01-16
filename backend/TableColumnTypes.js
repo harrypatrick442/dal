@@ -4,5 +4,6 @@ module.exports = {
 	VARCHAR:'varchar',
 	BIT:'bit',
 	DATETIME:'datetime',
-	TEXT:'text'
+	TEXT:'text',
+	UNIQUE_IDENTIFIER:'uniqueIdentifier'
 };

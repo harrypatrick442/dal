@@ -26,26 +26,22 @@ module.exports = new (function(params){
 			console.log('a');
 			console.log(shardHost.getDatabaseConfiguration().toJSON());
 			createDatabase(shardHost.getDatabaseConfiguration(), name).then((newDatabaseConfigurationIn)=>{
-				
-			console.log('b');
-			createTables(newDatabaseConfigurationIn, tables).then(()=>{	
-			console.log('c');
-					createTableTypes(newDatabaseConfigurationIn, tableTypes).then(()=>{
-			console.log('d');
-						newDatabaseConfiguration = newDatabaseConfigurationIn;
-						
-			console.log('d');
-						populateDatabaseWithProgrammables(programmablePaths, new DalProgrammability(newDatabaseConfigurationIn)).then(()=>{
-							createShard(newDatabaseConfigurationIn, shardHost).then((shard)=>{
-								shard.update().then(()=>{
-									resolve(shard);
-								}).catch(error);
-							}).catch(error);
-						}).catch(error);	
-					}).catch(error);	
+			createTables(newDatabaseConfigurationIn, tables).then(()=>{
+					if(tableTypes&&tableTypes.length>=0)
+						createTableTypes(newDatabaseConfigurationIn, tableTypes).then(part2).catch(error);	
+					else part2();
 				}).catch(error);	
 			}).catch(error);
-			
+			function part2(){
+				newDatabaseConfiguration = newDatabaseConfigurationIn;
+				populateDatabaseWithProgrammables(programmablePaths, new DalProgrammability(newDatabaseConfigurationIn)).then(()=>{
+					createShard(newDatabaseConfigurationIn, shardHost).then((shard)=>{
+						shard.update().then(()=>{
+							resolve(shard);
+						}).catch(error);
+					}).catch(error);
+				}).catch(error);
+			}
 			function error(err){
 				if(newDatabaseConfiguration){
 					DalDatabases.deleteDatabase(newDatabaseConfiguration).then(doReject).catch((err)=>{

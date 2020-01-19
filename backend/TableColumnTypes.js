@@ -5,5 +5,7 @@ module.exports = {
 	BIT:'bit',
 	DATETIME:'datetime',
 	TEXT:'text',
-	UNIQUE_IDENTIFIER:'uniqueidentifier'
+	UNIQUE_IDENTIFIER:'uniqueidentifier',
+	GUID:'guid'
+	
 };

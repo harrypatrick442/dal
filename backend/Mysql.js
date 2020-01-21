@@ -1,15 +1,22 @@
 const CALL="CALL ";
-var sql = require("mssql");
 const Core = require('core');
-const mysql  = require('node-mysql');
+const mysql  = require('mysql');
 var Mssql = function(configuration){
 	if(!configuration)throw new Error('No configuration provided');
 	const config = configuration.toJSON();
-	this.nonQuery = function(params){
-		throwNotImplemented();
-	};
-	this.query = function(params){
-		throwNotImplemented();
+	this.call = function(params, connection){
+		return new Promise((resolve, reject)=>{
+			var storedProcedure = params.storedProcedure;
+			if(!storedProcedure)throw new Error('No storedProcedure property provided');
+			var parameters = params.parameters;
+			var hadConnection = connection?true:false;
+			if(!hadConnection)connection = mysql.createConnection();
+			client.query(`CALL ${ storedProcedure }(?)`, parameters, function (error, results, fields) {
+				if(!hadConnection)connection.end();
+				if (error){ reject(error);return;}
+				resolve(results);
+			});
+		});
 	};
 	this.raw = function(definition){
 		throwNotImplemented();
@@ -34,5 +41,4 @@ var Mssql = function(configuration){
 		});
 	};
 };
-Mssql.sql=sql;
 module.exports = Mssql;

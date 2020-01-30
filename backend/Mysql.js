@@ -10,8 +10,17 @@ var Mssql = function(configuration){
 			if(!storedProcedure)throw new Error('No storedProcedure property provided');
 			var parameters = params.parameters;
 			var hadConnection = connection?true:false;
-			if(!hadConnection)connection = mysql.createConnection();
-			client.query(`CALL ${ storedProcedure }(?)`, parameters, function (error, results, fields) {
+			if(!hadConnection)connection = createConnection();
+			var str = `CALL ${ storedProcedure }(`;
+			var len = parameters.length;
+			if(len-- >0){
+				str+='?';
+				while(len-- >0){
+					str+=',?';
+				}
+			}
+			str+=')';
+			connection.query(str, parameters, function (error, results, fields) {
 				if(!hadConnection)connection.end();
 				if (error){ reject(error);return;}
 				resolve(results);
@@ -32,7 +41,7 @@ var Mssql = function(configuration){
 		return new Promise((resolve, reject)=>{
 			var sql = 'INSERT INTO ' + tableName + ' (' + columns.join(',') + ') VALUES ?';
 			var hadConnection = connection?true:false;
-			if(!hadConnection)connection = mysql.createConnection();
+			if(!hadConnection)connection = createConnection();
 			connection.query(sql, [rows], function (error, results, fields) {
 				if(!hadConnection)connection.end();
 				if (error){ reject(error);return;}
@@ -40,5 +49,29 @@ var Mssql = function(configuration){
 			});
 		});
 	};
+	function createConnection(){
+		console.log({
+			host: configuration.getServer(),
+			user: configuration.getUser(),
+			password: configuration.getPassword(),
+			database:configuration.getDatabase(),
+			debug: false
+		});
+		return mysql.createConnection({
+			host: configuration.getServer(),
+			user: configuration.getUser(),
+			password: configuration.getPassword(),
+			database:configuration.getDatabase(),
+			debug: false,
+			typeCast: typeCast
+		});
+	}
+	function typeCast( field, useDefaultTypeCasting ) {
+		if ( ( field.type === "BIT" ) && ( field.length === 1 ) ) {
+			var bytes = field.buffer();
+			return( bytes[ 0 ] === 1 );
+		}
+		return( useDefaultTypeCasting() ); 
+	}
 };
 module.exports = Mssql;

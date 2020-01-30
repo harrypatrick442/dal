@@ -1,4 +1,6 @@
 module.exports = {
-	SQL:'sql',
-	MYSQL:'mysql'
+	SQL:'mssql',
+	MSSQL:'mssql',
+	MYSQL:'mysql',
+	
 };

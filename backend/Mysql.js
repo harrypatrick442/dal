@@ -38,9 +38,21 @@ var Mssql = function(configuration){
 		return bulkInsert(tableName, keys, values, connection);
 	};
 	this.bulkInsert = bulkInsert;
+	this.raw = raw;
 	function bulkInsert(tableName, columns, rows, connection){
 		return new Promise((resolve, reject)=>{
 			var sql = 'INSERT INTO ' + tableName + ' (' + columns.join(',') + ') VALUES ?';
+			var hadConnection = connection?true:false;
+			if(!hadConnection)connection = createConnection();
+			connection.query(sql, [rows], function (error, results, fields) {
+				if(!hadConnection)connection.end();
+				if (error){ reject(error);return;}
+				resolve(results);
+			});
+		});
+	};
+	function raw(sql, rows, connection){
+		return new Promise((resolve, reject)=>{
 			var hadConnection = connection?true:false;
 			if(!hadConnection)connection = createConnection();
 			connection.query(sql, [rows], function (error, results, fields) {

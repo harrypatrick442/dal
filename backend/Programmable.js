@@ -2,7 +2,10 @@ const Core = require('core');
 const StringsHelper = Core.StringsHelper;
 const fs = require('fs');
 function Programmable(params){
-	var definition = params.definition;
+	const databaseType = params.databaseType;
+	if(!databaseType)throw new Error('No databaseType provided');
+	var definition = params.definition;/*SELECT ROUTINE_DEFINITION FROM INFORMATION_SCHEMA.ROUTINES
+WHERE ROUTINE_SCHEMA = 'yourdb' AND ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = "procedurename";*/
 	if(!definition)throw new Error('Definition is empty');
 	console.log(definition);
 	if(!params.name)params.name = getNameFromDefinition(definition);

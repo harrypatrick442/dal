@@ -1,4 +1,5 @@
-const {DatabaseTypes=require('./ DalProgrammabilityMysql, DalProgrammabilityMssql}= require('./../index');
+const DatabaseTypes=require('./DatabaseTypes'), DalProgrammabilityMysql = require('./DalProgrammabilityMysql'),
+DalProgrammabilityMssql=require('./DalProgrammabilityMssql');
 module.exports= function(configuration){
 	var TypedDalProgrammability;
 	console.log(DalProgrammabilityMssql);

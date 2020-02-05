@@ -1,16 +1,16 @@
+const DatabaseTypes=require('./DatabaseTypes');
 const Core = require('core');
 const StringsHelper = Core.StringsHelper;
 const fs = require('fs');
 function Programmable(params){
 	const databaseType = params.databaseType;
 	if(!databaseType)throw new Error('No databaseType provided');
-	var definition = params.definition;/*SELECT ROUTINE_DEFINITION FROM INFORMATION_SCHEMA.ROUTINES
-WHERE ROUTINE_SCHEMA = 'yourdb' AND ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = "procedurename";*/
+	var definition = params.definition;
 	if(!definition)throw new Error('Definition is empty');
 	console.log(definition);
 	if(!params.name)params.name = getNameFromDefinition(definition);
 	this.getProgrammableType = function(){
-		throwNotImplemented();
+		params.type
 	};
 	this.getName= function(){
 		return params.name;
@@ -18,20 +18,25 @@ WHERE ROUTINE_SCHEMA = 'yourdb' AND ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME 
 	this.getDefinition = function(){
 		return definition;
 	};
-	this.getCreateDefinition = function(){
-		return parseDefinition(definition, 'Create');
-	};
+	this.getCreateDefinition = getCreateDefinition;
 	this.getAlterDefinition = function(){
-		return parseDefinition(definition, 'Alter');
+		if(databaseType===DatabaseTypes.MYSQL)
+			return getCreateDefinition();
+		return parseDefinition(definition, 'alter');
 	};
 	this.getCreateOrAlterDefinition=function(){
-		return parseDefinition(definition, 'Create Or Alter');
+		if(databaseType===DatabaseTypes.MYSQL)
+			return getCreateDefinition();
+		return parseDefinition(definition, 'create or alter');
 	};
+	function getCreateDefinition(){
+		return parseDefinition(definition, 'create');
+	}
 };
 module.exports = Programmable;
-Programmable.fromSqlReader = function(){
+/*Programmable.fromSqlReader = function(){
 	throwNotImplemented();
-};
+};*/
 Programmable.fromFile=function(path){
 	return new Promise((resolve, reject)=>{
 		fs.readFile(path, "utf8", (err, sql)=>{
@@ -48,13 +53,16 @@ Programmable.fromFile=function(path){
 	});
 };
 function parseDefinition(str, toDo){
-	str = StringsHelper.replaceAll(str, "OLD\\s+Value", "New Value");
-	str = StringsHelper.replaceAll(str, "Create\\s+View", toDo+" View");
-	str = StringsHelper.replaceAll(str, "Create\\s+Function", toDo+" Function");
-	str =  StringsHelper.replaceAll(str, "Create\\s+Procedure", toDo+" Procedure");
-	str = StringsHelper.replaceAll(str, "Alter\\s+View", toDo+" View");
-	str = StringsHelper.replaceAll(str, "Alter\\s+Function", toDo+" Function");
-	return StringsHelper.replaceAll(str, "Alter\\s+Procedure", toDo+" Procedure");
+	str = str.toLowerCase();
+	str = StringsHelper.replaceAll(str, "old\\s+value", "new value");
+	str = StringsHelper.replaceAll(str, "create\\s+view", toDo+" view");
+	str = StringsHelper.replaceAll(str, "create\\s+function", toDo+" function");
+	str =  StringsHelper.replaceAll(str, "create\\s+procedure", toDo+" procedure");
+	str = StringsHelper.replaceAll(str, "alter\\s+view", toDo+" view");
+	str = StringsHelper.replaceAll(str, "alter\\s+function", toDo+" function");
+	str = StringsHelper.replaceAll(str, "create\\s+definer", toDo+" definer");
+	str = StringsHelper.replaceAll(str, "alter\\s+definer", toDo+" definer");
+	return StringsHelper.replaceAll(str, "alter\\s+procedure", toDo+" procedure");
 }
 function getNameFromDefinition(definition){
 	return '';

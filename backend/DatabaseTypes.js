@@ -4,7 +4,7 @@ const DatabaseTypes = {
 	MYSQL:'mysql',
 	
 };
-DatabaseTypes.checkIsValid=function(){
+DatabaseTypes.checkIsValid=function(databaseType){
 	return Object.values(DatabaseTypes).indexOf(databaseType)>=0;
 };
 module.exports =  DatabaseTypes;

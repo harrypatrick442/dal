@@ -28,9 +28,6 @@ var Mssql = function(configuration){
 			});
 		});
 	};
-	this.raw = function(definition){
-		throwNotImplemented();
-	};
 	this.bulkInsertObjects = function(tableName, objectsArray, connection){
 		if(objectsArray.length<1)return new Promise((resolve)=>{ resolve();});
 		var keys = Object.keys(objectsArray[0]);
@@ -58,7 +55,6 @@ var Mssql = function(configuration){
 		return new Promise((resolve, reject)=>{
 			var hadConnection = connection?true:false;
 			if(!hadConnection)connection = createConnection();
-			console.log('cd');
 			connection.query({sql:sql, values:values}, function (error, results, fields) {
 				if(!hadConnection)endConnection(connection);
 				if (error){ reject(error);return;}

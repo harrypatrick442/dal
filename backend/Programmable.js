@@ -1,7 +1,7 @@
 const DatabaseTypes=require('./DatabaseTypes');
 const Core = require('core');
 const StringsHelper = Core.StringsHelper;
-const fs = require('fs');
+const fs = require('fs'), path = require('path');
 function Programmable(params){
 	const databaseType = params.databaseType;
 	if(!databaseType)throw new Error('No databaseType provided');
@@ -10,7 +10,7 @@ function Programmable(params){
 	console.log(definition);
 	if(!params.name)params.name = getNameFromDefinition(definition);
 	this.getProgrammableType = function(){
-		params.type
+		return params.type;
 	};
 	this.getName= function(){
 		return params.name;
@@ -29,9 +29,9 @@ function Programmable(params){
 			return getCreateDefinition();
 		return parseDefinition(definition, 'create or alter');
 	};
-	this.toFile = function(){
+	this.toFile = function(filePath){
 		return new Promise((resolve, reject)=>{
-			fs.writeFile(path, definition, "utf8", (err)=>{
+			fs.writeFile(filePath, definition, "utf8", (err)=>{
 				if(err){
 					reject(err);
 					return;
@@ -48,9 +48,9 @@ module.exports = Programmable;
 /*Programmable.fromSqlReader = function(){
 	throwNotImplemented();
 };*/
-Programmable.fromFile=function(path){
+Programmable.fromFile=function(filePath, programmableType, databaseType){
 	return new Promise((resolve, reject)=>{
-		fs.readFile(path, "utf8", (err, sql)=>{
+		fs.readFile(filePath, "utf8", (err, sql)=>{
 			if(err){
 				reject(err);
 				return;
@@ -59,7 +59,8 @@ Programmable.fromFile=function(path){
 				reject(new Error('Empty definition'));
 				return;
 			}
-			resolve(new Programmable({definition:sql}));
+			resolve(new Programmable({definition:sql, name:path.basename(filePath), 
+				programmableType:programmableType, databaseType:databaseType}));
 		});
 	});
 };

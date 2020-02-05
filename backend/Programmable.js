@@ -29,6 +29,17 @@ function Programmable(params){
 			return getCreateDefinition();
 		return parseDefinition(definition, 'create or alter');
 	};
+	this.toFile = function(){
+		return new Promise((resolve, reject)=>{
+			fs.writeFile(path, definition, "utf8", (err)=>{
+				if(err){
+					reject(err);
+					return;
+				}
+				resolve();
+			});
+		});
+	};
 	function getCreateDefinition(){
 		return parseDefinition(definition, 'create');
 	}

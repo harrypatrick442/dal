@@ -2,21 +2,26 @@ const DatabaseTypes=require('./DatabaseTypes');
 const Core = require('core');
 const StringsHelper = Core.StringsHelper;
 const fs = require('fs'), path = require('path');
+const ProgrammableTypes = require('./ProgrammableTypes');
 function Programmable(params){
 	const databaseType = params.databaseType;
 	if(!databaseType)throw new Error('No databaseType provided');
+	const programmableType = params.type;
+	if(!programmableType)throw new Error('No programmableType provided');
 	var definition = params.definition;
 	if(!definition)throw new Error('Definition is empty');
-	console.log(definition);
 	if(!params.name)params.name = getNameFromDefinition(definition);
 	this.getProgrammableType = function(){
-		return params.type;
+		return programmableType;
 	};
 	this.getName= function(){
 		return params.name;
 	};
 	this.getDefinition = function(){
 		return definition;
+	};
+	this.getDatabaseType = function(){
+		return databaseType;
 	};
 	this.getCreateDefinition = getCreateDefinition;
 	this.getAlterDefinition = function(){
@@ -28,6 +33,13 @@ function Programmable(params){
 		if(databaseType===DatabaseTypes.MYSQL)
 			return getCreateDefinition();
 		return parseDefinition(definition, 'create or alter');
+	};
+	this.getDeleteIfExists = function(){
+		var programmableTypeStr = ProgrammableTypes.toString(programmableType, databaseType);
+		if(databaseType===DatabaseTypes.MYSQL){
+			return 'drop '+programmableTypeStr+' if exists '+params.name;
+		}
+		throwNotImplemented();
 	};
 	this.toFile = function(filePath){
 		return new Promise((resolve, reject)=>{
@@ -59,8 +71,8 @@ Programmable.fromFile=function(filePath, programmableType, databaseType){
 				reject(new Error('Empty definition'));
 				return;
 			}
-			resolve(new Programmable({definition:sql, name:path.basename(filePath), 
-				programmableType:programmableType, databaseType:databaseType}));
+			resolve(new Programmable({definition:sql, name:path.basename(filePath, path.extname(filePath)), 
+				type:programmableType, databaseType:databaseType}));
 		});
 	});
 };

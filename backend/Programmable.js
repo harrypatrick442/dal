@@ -71,11 +71,30 @@ Programmable.fromFile=function(filePath, programmableType, databaseType){
 				reject(new Error('Empty definition'));
 				return;
 			}
-			resolve(new Programmable({definition:sql, name:path.basename(filePath, path.extname(filePath)), 
-				type:programmableType, databaseType:databaseType}));
+			const fileNameNoExtension = path.basename(filePath, path.extname(filePath));
+			const programmable = new Programmable({definition:sql, name:fileNameNoExtension, 
+				type:programmableType, databaseType:databaseType});
+			checkStoredProcedureMatchesFileName(fileNameNoExtension, programmable);
+			resolve(programmable);
 		});
 	});
 };
+function checkStoredProcedureMatchesFileName(fileName, programmable){
+	var storedProcedureName = getProgrammableNameFromDefinition(programmable);
+	if(storedProcedureName!==fileName)throw new Error('The file name "'+fileName+'" did not match the stored procedure name "'+storedProcedureName+'"');
+}
+function getProgrammableNameFromDefinition(programmable){
+	const databaseType = programmable.getDatabaseType();
+	switch(databaseType){
+		case DatabaseTypes.MYSQL:
+			const programmableType = programmable.getProgrammableType();
+			const regExp = new RegExp(ProgrammableTypes.toString(programmableType, databaseType)+' +`([a-zA-Z0-9_-]+)`\(\)');
+			const res = regExp.exec(programmable.getCreateDefinition());
+			return res[1];
+		default:
+			throwNotImplemented();
+	}
+}
 function parseDefinition(str, toDo){
 	str = str.toLowerCase();
 	str = StringsHelper.replaceAll(str, "old\\s+value", "new value");

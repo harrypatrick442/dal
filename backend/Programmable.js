@@ -57,9 +57,6 @@ function Programmable(params){
 	}
 };
 module.exports = Programmable;
-/*Programmable.fromSqlReader = function(){
-	throwNotImplemented();
-};*/
 Programmable.fromFile=function(filePath, programmableType, databaseType){
 	return new Promise((resolve, reject)=>{
 		fs.readFile(filePath, "utf8", (err, sql)=>{

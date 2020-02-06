@@ -23,7 +23,6 @@ module.exports = new (function(params){
 			const tableTypes = params.tableTypes;
 			if(!tableTypes)throw new Error('No tableTypes provided');
 			var newDatabaseConfiguration;
-			console.log('a');
 			console.log(shardHost.getDatabaseConfiguration().toJSON());
 			createDatabase(shardHost.getDatabaseConfiguration(), name).then((newDatabaseConfigurationIn)=>{
 			createTables(newDatabaseConfigurationIn, tables).then(()=>{

@@ -20,7 +20,6 @@ var Mssql = function(configuration){
 				}
 			}
 			str+=')';
-			console.log(str);
 			connection.query(str, parameters, function (error, results, fields) {
 				if(!hadConnection)endConnection(connection);
 				if (error){ reject(error);return;}
@@ -32,7 +31,6 @@ var Mssql = function(configuration){
 		if(objectsArray.length<1)return new Promise((resolve)=>{ resolve();});
 		var keys = Object.keys(objectsArray[0]);
 		var values = objectsArray.map( obj => keys.map( key => obj[key]));
-		console.log('d');
 		return bulkInsert(tableName, keys, values, connection);
 	};
 	this.bulkInsert = bulkInsert;
@@ -40,10 +38,8 @@ var Mssql = function(configuration){
 	function bulkInsert(tableName, columns, rows, connection){
 		return new Promise((resolve, reject)=>{
 			var sql = 'INSERT INTO ' + tableName + ' (' + columns.join(',') + ') VALUES ?';
-			//console.log(sql);
 			var hadConnection = connection?true:false;
 			if(!hadConnection)connection = createConnection();
-			console.log('c');
 			connection.query(sql, [rows], function (error, results, fields) {
 				if(!hadConnection)endConnection(connection);
 				if (error){ reject(error);return;}

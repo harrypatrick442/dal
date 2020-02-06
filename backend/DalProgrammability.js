@@ -16,4 +16,5 @@ module.exports= function(configuration){
 	console.log(dal);
 	this.updateProgrammable = dal.updateProgrammable;
 	this.readProgrammables = dal.readProgrammables;
+	this.deleteProgrammable = dal.deleteProgrammable;
 };

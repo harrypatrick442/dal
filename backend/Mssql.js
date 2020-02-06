@@ -53,16 +53,19 @@ var Mssql = function(configuration){
 		});
 	};
 	this.bulkInsert = function(params){
-		var table = params.table;
-		var callback= params.callback;
-		var connection = new sql.ConnectionPool(config);
-		connection.connect().then(function(connection) {
-			var request = new sql.Request(connection);
-			request.bulk(table).then(function(result) {
-				callback(result);
-			}).catch(function(err) {
-				console.log(err.message); 
-				throw err;
+		return new Promise((resolve, reject)=>{
+			var table = params.table;
+			var callback= params.callback;
+			var connection = new sql.ConnectionPool(config);
+			connection.connect().then(function(connection) {
+				var request = new sql.Request(connection);
+				request.bulk(table).then(function(result) {
+					callback&&callback(result);
+					resolve(result);
+				}).catch(function(err) {
+					console.error(err.message); 
+					reject(err);
+				});
 			});
 		});
 	};

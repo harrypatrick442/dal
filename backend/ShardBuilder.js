@@ -10,21 +10,18 @@ module.exports = new (function(params){
 	const DalTypes = require('./DalTypes');
 	this.build = function(params){
 		return new Promise((resolve, reject)=>{
-			const programmablePaths = params.programmablePaths;
+			const programmablePaths = params.programmablePaths, shardHost = params.shardHost,
+			name = params.name, createShard = params.createShard, tables = params.tables, tableTypes = params.tableTypes;
 			if(!programmablePaths)throw new Error('No programmablePaths provided');
-			const shardHost = params.shardHost;
 			if(!shardHost)throw new Error('No host provided');
-			const name = params.name;
 			if(!name)throw new Error('No name provided');
-			const createShard = params.createShard;
 			if(!createShard)throw new Error('No createShard provided');
-			const tables = params.tables;
 			if(!tables)throw new Error('No tables provided');
-			const tableTypes = params.tableTypes;
 			if(!tableTypes)throw new Error('No tableTypes provided');
 			var newDatabaseConfiguration;
 			console.log(shardHost.getDatabaseConfiguration().toJSON());
-			createDatabase(shardHost.getDatabaseConfiguration(), name).then((newDatabaseConfigurationIn)=>{
+			const existingDatabaseConfiguration = shardHost.getDatabaseConfiguration();
+			createDatabase(existingDatabaseConfiguration, name).then((newDatabaseConfigurationIn)=>{
 			createTables(newDatabaseConfigurationIn, tables).then(()=>{
 					if(tableTypes&&tableTypes.length>=0)
 						createTableTypes(newDatabaseConfigurationIn, tableTypes).then(part2).catch(error);	
@@ -33,11 +30,15 @@ module.exports = new (function(params){
 			}).catch(error);
 			function part2(){
 				newDatabaseConfiguration = newDatabaseConfigurationIn;
-				populateDatabaseWithProgrammables(programmablePaths, new DalProgrammability(newDatabaseConfigurationIn)).then(()=>{
+				populateDatabaseWithProgrammables(programmablePaths, new DalProgrammability(newDatabaseConfigurationIn), databaseType, existingDatabaseConfiguration.getDatabaseType()).then(()=>{
 					createShard(newDatabaseConfigurationIn, shardHost).then((shard)=>{
-						shard.update().then(()=>{
-							resolve(shard);
-						}).catch(error);
+						if(shard.update){
+							shard.update().then(()=>{
+								resolve(shard);
+							}).catch(error);
+							return;
+						}
+						resolve(shard);
 					}).catch(error);
 				}).catch(error);
 			}
@@ -59,13 +60,13 @@ module.exports = new (function(params){
 	function createDatabase(currentDatabaseConfiguration, name){
 		return DalDatabases.createOrRecreateDatabase(currentDatabaseConfiguration, name);
 	}
-	function createTables(databaseConfiguration, tables){
-		return createTX(DalTables.createTable, databaseConfiguration, tables)
+	function createTables(existingDatabaseConfiguration, tables){
+		return createTX(DalTables.createTable, existingDatabaseConfiguration, tables)
 	}
-	function createTableTypes(databaseConfiguration, tableTypes){
-		return createTX(DalTypes.createTableTypes, databaseConfiguration, tableTypes)
+	function createTableTypes(existingDatabaseConfiguration, tableTypes){
+		return createTX(DalTypes.createTableTypes, existingDatabaseConfiguration, tableTypes)
 	}
-	function createTX(func, databaseConfiguration, tables){
+	function createTX(func, existingDatabaseConfiguration, tables){
 		return new Promise((resolve, reject)=>{
 			var iterator = new Iterator(tables);
 			next();
@@ -75,19 +76,16 @@ module.exports = new (function(params){
 					return;
 				}
 				var table = iterator.next();
-				func(databaseConfiguration, table).then(next).catch(reject);
+				func(existingDatabaseConfiguration, table).then(next).catch(reject);
 			}
 		});
 	}
-	function populateDatabaseWithProgrammables(programmablePaths, dalProgrammability){
+	function populateDatabaseWithProgrammables(programmablePaths, dalProgrammability, databaseType){
 		return new Promise((resolve, reject)=>{
-				console.log('getProgrammables');
-			getProgrammables(programmablePaths).then((programmables)=>{
+			getProgrammables(programmablePaths, databaseType).then((programmables)=>{
 				var iterator = new Iterator(programmables);
-				console.log('iterator');
 				nextProgrammable();
 				function nextProgrammable(){
-				console.log('nextProgrammable');
 					if(!iterator.hasNext()){
 						resolve();
 						return;
@@ -98,21 +96,23 @@ module.exports = new (function(params){
 			}).catch(reject);
 		});
 	}
-	function getProgrammables(programmablePaths){
+	function getProgrammables(programmablePaths, databaseType){
 		return new Promise((resolve, reject)=>{
 			var programmables =[];
-			var iteratorProgrammablePaths = new Iterator(programmablePaths);
+			var iteratorProgrammableOrProgrammablePaths = new Iterator(programmablePaths);
 			next();
 			function next(){
-					console.log('n');
-				if(!iteratorProgrammablePaths.hasNext()){
-					console.log('next');
+				if(!iteratorProgrammableOrProgrammablePaths.hasNext()){
 					resolve(programmables);
 					return;
 				}
-				var programmablePath = iteratorProgrammablePaths.next();
-				Programmable.fromFile(programmablePath).then((programmable)=>{
-					console.log('n2');
+				var programmableOrProgrammablePath = iteratorProgrammableOrProgrammablePaths.next();
+				if(programmableOrProgrammablePath instanceof Programmable){
+					programmables.push(programmable);
+					next();
+					return;
+				}
+				Programmable.fromFile(programmablePath, null, databaseType).then((programmable)=>{
 					programmables.push(programmable);
 					next();
 				}).catch(reject);

@@ -68,6 +68,9 @@ Programmable.fromFile=function(filePath, programmableType, databaseType){
 				reject(new Error('Empty definition'));
 				return;
 			}
+			if(!programmableType){
+				programmableType = getProgrammableTypeFromDefinition();
+			}
 			const fileNameNoExtension = path.basename(filePath, path.extname(filePath));
 			const programmable = new Programmable({definition:sql, name:fileNameNoExtension, 
 				type:programmableType, databaseType:databaseType});
@@ -79,6 +82,15 @@ Programmable.fromFile=function(filePath, programmableType, databaseType){
 function checkStoredProcedureMatchesFileName(fileName, programmable){
 	var storedProcedureName = getProgrammableNameFromDefinition(programmable);
 	if(storedProcedureName!==fileName)throw new Error('The file name "'+fileName+'" did not match the stored procedure name "'+storedProcedureName+'"');
+}
+function getProgrammableTypeFromDefinition(programmable){
+	const databaseType = programmable.getDatabaseType();
+	switch(databaseType){
+		case DatabaseTypes.MYSQL:
+			const regExp = new RegExp('');
+		default:
+			throwNotImplemented();
+	}
 }
 function getProgrammableNameFromDefinition(programmable){
 	const databaseType = programmable.getDatabaseType();

@@ -17,7 +17,7 @@ module.exports = new (function(params){
 			if(!name)throw new Error('No name provided');
 			if(!createShard)throw new Error('No createShard provided');
 			if(!tables)throw new Error('No tables provided');
-			if(!tableTypes)throw new Error('No tableTypes provided');
+			if(tableTypes===undefined)throw new Error('No tableTypes provided');
 			var newDatabaseConfiguration;
 			console.log(shardHost.getDatabaseConfiguration().toJSON());
 			const existingDatabaseConfiguration = shardHost.getDatabaseConfiguration();

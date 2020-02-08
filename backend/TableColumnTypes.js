@@ -6,6 +6,8 @@ module.exports = {
 	DATETIME:'datetime',
 	TEXT:'text',
 	UNIQUE_IDENTIFIER:'uniqueidentifier',
-	GUID:'guid'
+	GUID:'guid',
+	TINYINT:'tinyint',
+	SMALLINT:'smallint'
 	
 };

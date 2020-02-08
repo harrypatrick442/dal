@@ -1,8 +1,16 @@
+const  {throwNotImplemented}=require('core');
+const Mysql =require('./Mysql');
+const Mssql =require('./Mssql');
+const DatabaseTypes = require('./DatabaseTypes');
 module.exports= new (function(){
-	const Dal =require('./Dal');
 	this.createTable = function(databaseConfiguration, table){
-		var dal = new Dal(databaseConfiguration);
-		setTimeout(()=>{console.log(table.getCreate());},0);
-		return dal.raw(table.getCreate());
+		switch(databaseConfiguration.getDatabaseType()){
+			case DatabaseTypes.MYSQL:
+				return new Mysql(databaseConfiguration).raw(table.getCreate());
+			case DatabaseTypes.MSSQL:	
+				return new Mssql(databaseConfiguration).raw(table.getCreate());
+			default:
+				throwNotImplemented();
+		}
 	};
 })();

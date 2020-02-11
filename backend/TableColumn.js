@@ -28,6 +28,6 @@ module.exports = function(params){
 		return params.autoIncrement?true:false;
 	};
 	this.getUnique = function(){
-		
+		return params.unique?true:false;
 	};
 };

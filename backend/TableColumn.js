@@ -27,4 +27,7 @@ module.exports = function(params){
 	this.getAutoIncrement = function(){
 		return params.autoIncrement?true:false;
 	};
+	this.getUnique = function(){
+		
+	};
 };

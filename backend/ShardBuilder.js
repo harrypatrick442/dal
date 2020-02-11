@@ -22,16 +22,16 @@ module.exports = new (function(params){
 			console.log(shardHost.getDatabaseConfiguration().toJSON());
 			const existingDatabaseConfiguration = shardHost.getDatabaseConfiguration();
 			createDatabase(existingDatabaseConfiguration, name).then((newDatabaseConfigurationIn)=>{
-			createTables(newDatabaseConfigurationIn, tables).then(()=>{
+				createTables(newDatabaseConfigurationIn, tables).then(()=>{
+					newDatabaseConfiguration = newDatabaseConfigurationIn;
 					if(tableTypes&&tableTypes.length>=0)
 						createTableTypes(newDatabaseConfigurationIn, tableTypes).then(part2).catch(error);	
 					else part2();
 				}).catch(error);	
 			}).catch(error);
 			function part2(){
-				newDatabaseConfiguration = newDatabaseConfigurationIn;
-				populateDatabaseWithProgrammables(programmablePaths, new DalProgrammability(newDatabaseConfigurationIn), databaseType, existingDatabaseConfiguration.getDatabaseType()).then(()=>{
-					createShard(newDatabaseConfigurationIn, shardHost).then((shard)=>{
+				populateDatabaseWithProgrammables(programmablePaths, new DalProgrammability(newDatabaseConfiguration), existingDatabaseConfiguration.getDatabaseType()).then(()=>{
+					createShard(newDatabaseConfiguration, shardHost).then((shard)=>{
 						if(shard.update){
 							shard.update().then(()=>{
 								resolve(shard);
@@ -112,7 +112,7 @@ module.exports = new (function(params){
 					next();
 					return;
 				}
-				Programmable.fromFile(programmablePath, null, databaseType).then((programmable)=>{
+				Programmable.fromFile(programmableOrProgrammablePath, null, databaseType).then((programmable)=>{
 					programmables.push(programmable);
 					next();
 				}).catch(reject);

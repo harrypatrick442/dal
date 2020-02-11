@@ -44,6 +44,7 @@ module.exports= new(function(configuration){
 			case DatabaseTypes.MYSQL:
 				var statement = "DROP DATABASE IF EXISTS "+name+ ';';
 				var dalMysql = new Mysql(currentDatabaseConfiguration);
+				console.log(statement);
 				return dalMysql.raw(statement);
 		}
 	};

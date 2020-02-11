@@ -69,7 +69,7 @@ Programmable.fromFile=function(filePath, programmableType, databaseType){
 				return;
 			}
 			if(!programmableType){
-				programmableType = getProgrammableTypeFromDefinition();
+				programmableType = getProgrammableTypeFromDefinition(sql, databaseType);
 			}
 			const fileNameNoExtension = path.basename(filePath, path.extname(filePath));
 			const programmable = new Programmable({definition:sql, name:fileNameNoExtension, 
@@ -83,11 +83,12 @@ function checkStoredProcedureMatchesFileName(fileName, programmable){
 	var storedProcedureName = getProgrammableNameFromDefinition(programmable);
 	if(storedProcedureName!==fileName)throw new Error('The file name "'+fileName+'" did not match the stored procedure name "'+storedProcedureName+'"');
 }
-function getProgrammableTypeFromDefinition(programmable){
-	const databaseType = programmable.getDatabaseType();
+function getProgrammableTypeFromDefinition(sql, databaseType){
 	switch(databaseType){
 		case DatabaseTypes.MYSQL:
-			const regExp = new RegExp('');
+			const regExp = new RegExp('DEFINER *= *`[a-zA-Z0-9_-]+` *@ *`(?:%|[a-zA-Z0-9_-]+)` +([a-zA-Z]+) `[a-zA-Z0-9_-]+` *[(]','i');
+			const res = regExp.exec(sql);
+			return ProgrammableTypes.parse(res[1], databaseType);
 		default:
 			throwNotImplemented();
 	}
@@ -97,7 +98,7 @@ function getProgrammableNameFromDefinition(programmable){
 	switch(databaseType){
 		case DatabaseTypes.MYSQL:
 			const programmableType = programmable.getProgrammableType();
-			const regExp = new RegExp(ProgrammableTypes.toString(programmableType, databaseType)+' +`([a-zA-Z0-9_-]+)`\(\)');
+			const regExp = new RegExp(ProgrammableTypes.toString(programmableType, databaseType)+' +`([a-zA-Z0-9_-]+)`\(\)','i');
 			const res = regExp.exec(programmable.getCreateDefinition());
 			return res[1];
 		default:
@@ -105,7 +106,6 @@ function getProgrammableNameFromDefinition(programmable){
 	}
 }
 function parseDefinition(str, toDo){
-	str = str.toLowerCase();
 	str = StringsHelper.replaceAll(str, "old\\s+value", "new value");
 	str = StringsHelper.replaceAll(str, "create\\s+view", toDo+" view");
 	str = StringsHelper.replaceAll(str, "create\\s+function", toDo+" function");

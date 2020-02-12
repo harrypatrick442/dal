@@ -30,4 +30,7 @@ module.exports = function(params){
 	this.getUnique = function(){
 		return params.unique?true:false;
 	};
+	this.getIndex = function(){
+		return params.index;
+	};
 };

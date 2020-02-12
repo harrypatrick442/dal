@@ -28,7 +28,7 @@ const Table = function(params){
 		var first = true;
 		var primaryKeyColumns=[];
 		const columnBracketing = getColumnBracketing(databaseType);
-		const uniqueColumns=[];
+		const uniqueColumns=[], indices=[];
 		columns.forEach((column)=>{
 			if(first)first = false;
 			else str+=',';
@@ -44,6 +44,9 @@ const Table = function(params){
 			}
 			if(column.getPrimaryKey())
 				primaryKeyColumns.push(column);
+			if(column.getIndex()){
+				indices.push(new Index( getIndexName(name, column.getName(), column.getIndex()), column.getName(), column.getIndex()));
+			}
 		});
 		if(primaryKeyColumns.length>0){
 			str+=', PRIMARY KEY(';
@@ -56,7 +59,7 @@ const Table = function(params){
 			str+=')';
 		}
 		if(uniqueColumns.length>0){
-			str+=' UNIQUE(';
+			str+=', UNIQUE(';
 			var first = true;
 			uniqueColumns.forEach((uniqueColumn)=>{				
 				if(first)first = false;
@@ -65,21 +68,34 @@ const Table = function(params){
 			});
 			str+=')';
 		}
-		str +=')';
-		createIndices(indices);
+		if(indices.length>0){
+			str+=', INDEX(';
+			var first = true;
+			indices.forEach((index)=>{				
+				if(first)first = false;
+				else str+=',';
+				str+=columnBracketing[0]+index.getColumn()+columnBracketing[1];
+			});
+			str+=')';
+		}
+		str +=');';
+		//str+=createIndices(indices, databaseType);
 		console.log(str);
 		return str;
 	}
 	function createIndices(indices, databaseType){
+		var str='';
 		switch(databaseType){
 			case DatabaseTypes.MYSQL:
 				indices.forEach((index)=>{
-					
+					str+='CREATE INDEX '+index.getName()+' ON '+name+'('+index.getColumn()+');';
 				});
+				break;
 			case DatabaseTypes.MSSQL:
 				throwNotImplemented();
+			default:throwNotImplemented();
 		}
-		CREATE INDEX [index name] ON [table name]([column name]);
+		return str;
 	}
 	function getPrecisionScaleLength(column){
 		var type = column.getType();
@@ -121,6 +137,19 @@ const Table = function(params){
 			default:
 				return ['[',']'];
 		}
+	}
+	function Index(name, column, indexType){
+		if(!name)throw new Error('No name provided');
+		if(!column)throw new Error('No column provided');
+		this.getColumn = function(){
+			return column;
+		};
+		this.getName = function(){
+			return name;
+		};
+	}
+	function getIndexName(tableName, columnName, indexType){
+		return 'IX_'+tableName+'_'+columnName;
 	}
 };
 

@@ -66,8 +66,20 @@ const Table = function(params){
 			str+=')';
 		}
 		str +=')';
+		createIndices(indices);
 		console.log(str);
 		return str;
+	}
+	function createIndices(indices, databaseType){
+		switch(databaseType){
+			case DatabaseTypes.MYSQL:
+				indices.forEach((index)=>{
+					
+				});
+			case DatabaseTypes.MSSQL:
+				throwNotImplemented();
+		}
+		CREATE INDEX [index name] ON [table name]([column name]);
 	}
 	function getPrecisionScaleLength(column){
 		var type = column.getType();
@@ -112,4 +124,5 @@ const Table = function(params){
 	}
 };
 
+module.exports = Table;
 module.exports = Table;

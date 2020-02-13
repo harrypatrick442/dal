@@ -1,5 +1,5 @@
 const Dal = require('./backend/Dal');
-var classNames =['getIntsTable', 'DalDatabases', 'DalProgrammability', 'DalTables', 'DalTypes', 'DatabaseTypes',
+var classNames =['getIntsTable', 'DalProgrammability','DalDatabases',  'DalTables', 'DalTypes',
  'Mssql', 'Mysql', 'Sqlite', 'ShardBuilder', 'Table','TableColumn','TableColumnTypes', 'ProgrammableTypes', 'Programmable', 'IndexTypes'];
 classNames.forEach((className)=>{
 	Object.defineProperty(Dal, className, {

@@ -1,6 +1,6 @@
 const Core = require('core');
 const TableColumnTypes = require('./TableColumnTypes');
-const DatabaseTypes = require('./DatabaseTypes');
+const {DatabaseTypes }= require('enums');
 const Table = function(params){
 	var name = params.name;
 	if(!name)throw new Error('No name provided');

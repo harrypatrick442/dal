@@ -1,7 +1,7 @@
+const {DatabaseTypes}=require('enums');
 const  {throwNotImplemented}=require('core');
 const Mysql =require('./Mysql');
 const Mssql =require('./Mssql');
-const DatabaseTypes = require('./DatabaseTypes');
 module.exports= new (function(){
 	this.createTable = function(databaseConfiguration, table){
 		switch(databaseConfiguration.getDatabaseType()){

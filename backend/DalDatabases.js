@@ -1,7 +1,7 @@
 module.exports= new(function(configuration){
 	const Mysql = require('./Mysql');
 	const Mssql = require('./Mssql');
-	const DatabaseTypes = require('./DatabaseTypes');
+	const {DatabaseTypes}=require('enums');
 	const DatabaseConfiguration = require('configuration').DatabaseConfiguration;
 	this.createDatabase = function(currentDatabaseConfiguration, name){
 		switch(currentDatabaseConfiguration.getDatabaseType()){

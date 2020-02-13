@@ -1,5 +1,5 @@
-const DatabaseTypes=require('./DatabaseTypes');
 const Core = require('core');
+const {DatabaseTypes}=require('enums');
 const StringsHelper = Core.StringsHelper;
 const fs = require('fs'), path = require('path');
 const ProgrammableTypes = require('./ProgrammableTypes');

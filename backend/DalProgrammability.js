@@ -1,4 +1,5 @@
-const DatabaseTypes=require('./DatabaseTypes'), DalProgrammabilityMysql = require('./DalProgrammabilityMysql'),
+const {DatabaseTypes}=require('enums');
+const DalProgrammabilityMysql = require('./DalProgrammabilityMysql'),
 DalProgrammabilityMssql=require('./DalProgrammabilityMssql');
 module.exports= function(configuration){
 	var TypedDalProgrammability;

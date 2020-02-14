@@ -68,14 +68,17 @@ Programmable.fromFile=function(filePath, programmableType, databaseType){
 				reject(new Error('Empty definition'));
 				return;
 			}
-			if(!programmableType){
-				programmableType = getProgrammableTypeFromDefinition(sql, databaseType);
+			try{
+				if(!programmableType){
+					programmableType = getProgrammableTypeFromDefinition(sql, databaseType);
+				}
+				const fileNameNoExtension = path.basename(filePath, path.extname(filePath));
+				const programmable = new Programmable({definition:sql, name:fileNameNoExtension, 
+					type:programmableType, databaseType:databaseType});
+				checkStoredProcedureMatchesFileName(fileNameNoExtension, programmable);
+				resolve(programmable);
 			}
-			const fileNameNoExtension = path.basename(filePath, path.extname(filePath));
-			const programmable = new Programmable({definition:sql, name:fileNameNoExtension, 
-				type:programmableType, databaseType:databaseType});
-			checkStoredProcedureMatchesFileName(fileNameNoExtension, programmable);
-			resolve(programmable);
+			catch(err){reject(err);}
 		});
 	});
 };
@@ -86,8 +89,15 @@ function checkStoredProcedureMatchesFileName(fileName, programmable){
 function getProgrammableTypeFromDefinition(sql, databaseType){
 	switch(databaseType){
 		case DatabaseTypes.MYSQL:
-			const regExp = new RegExp('DEFINER *= *`[a-zA-Z0-9_-]+` *@ *`(?:%|[a-zA-Z0-9_-]+)` +([a-zA-Z]+) `[a-zA-Z0-9_-]+` *[(]','i');
-			const res = regExp.exec(sql);
+			const regExp = new RegExp('DEFINER\\s*=\\s*`[a-zA-Z0-9_-]+` *@ *`(?:%|[a-zA-Z0-9_-]+)` +([a-zA-Z]+)\\s*`[a-zA-Z0-9_-]+`\\s*[(]','i');
+			var res = regExp.exec(sql);
+			if(res===null){
+				const regExp = new RegExp('CREATE\\s+([a-zA-Z]+)\\s+(?:[a-zA-Z0-9_-]+)\\s*[(]','i');
+				res = regExp.exec(sql);
+			}
+			console.log(sql);
+			if(res===null)throw new Error('Could not identify ProgrammableType');
+			
 			return ProgrammableTypes.parse(res[1], databaseType);
 		default:
 			throwNotImplemented();
@@ -99,7 +109,13 @@ function getProgrammableNameFromDefinition(programmable){
 		case DatabaseTypes.MYSQL:
 			const programmableType = programmable.getProgrammableType();
 			const regExp = new RegExp(ProgrammableTypes.toString(programmableType, databaseType)+' +`([a-zA-Z0-9_-]+)`\(\)','i');
-			const res = regExp.exec(programmable.getCreateDefinition());
+			var res = regExp.exec(programmable.getCreateDefinition());
+			if(res===null){
+				
+				const regExp = new RegExp(ProgrammableTypes.toString(programmableType, databaseType)+' +([a-zA-Z0-9_-]+)\\s*[(]','i');
+				res = regExp.exec(programmable.getCreateDefinition());
+			}
+			if(res===null)throw new Error('Could not identify name');
 			return res[1];
 		default:
 			throwNotImplemented();

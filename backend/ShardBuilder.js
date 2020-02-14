@@ -43,8 +43,9 @@ module.exports = new (function(params){
 				}).catch(error);
 			}
 			function error(err){
+				console.log('dropping');
 				if(newDatabaseConfiguration){
-					DalDatabases.deleteDatabase(newDatabaseConfiguration).then(doReject).catch((err)=>{
+					DalDatabases.deleteDatabase(newDatabaseConfiguration, name).then(doReject).catch((err)=>{
 						DalLog.error(new Error('Error deleting database '+newDatabaseConfiguration.getDatabase()+' while cleaning up after creating new shard faile'));
 						doReject();
 					});

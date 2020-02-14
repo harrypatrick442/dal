@@ -104,7 +104,7 @@ const Table = function(params){
 			if(precision===undefined||precision===null)throw new Error('Precision not supplied for '+type);
 			var scale = column.getScale();
 			if(scale===undefined||scale===null)throw new Error('Scale not supplied for '+type);
-			return '('+preicsion+','+scale+')';
+			return '('+precision+','+scale+')';
 		}
 		var length = column.getLength();
 		if(length===undefined||length===null)return '';

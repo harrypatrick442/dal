@@ -1,0 +1,1 @@
+module.exports = {NON_CLUSTERED:'nonClustered', CLUSTERED:'clustered'};

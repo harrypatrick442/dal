@@ -10,3 +10,5 @@ backend/node_modules
 node_modules
 node_modules/enums
 backend/node_modules/enums
+node_modules/file_system
+backend/node_modules/file_system

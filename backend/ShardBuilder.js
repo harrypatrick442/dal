@@ -13,7 +13,7 @@ module.exports = new (function(params){
 			const programmablePaths = params.programmablePaths, shardHost = params.shardHost,
 			name = params.name, createShard = params.createShard, tables = params.tables, tableTypes = params.tableTypes;
 			if(!programmablePaths)throw new Error('No programmablePaths provided');
-			if(!shardHost)throw new Error('No host provided');
+			if(!shardHost)throw new Error('No shardHost provided');
 			if(!name)throw new Error('No name provided');
 			if(!createShard)throw new Error('No createShard provided');
 			if(!tables)throw new Error('No tables provided');
@@ -100,6 +100,7 @@ module.exports = new (function(params){
 	function getProgrammables(programmablePaths, databaseType){
 		return new Promise((resolve, reject)=>{
 			var programmables =[];
+			console.log(programmablePaths);
 			var iteratorProgrammableOrProgrammablePaths = new Iterator(programmablePaths);
 			next();
 			function next(){
